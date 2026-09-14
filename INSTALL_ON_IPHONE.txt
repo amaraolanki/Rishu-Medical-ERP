@@ -1,0 +1,21 @@
+RISHU MEDICAL ERP — iPhone Installation
+
+IMPORTANT: iPhone PWA installation needs the ERP to be served from HTTPS or from localhost. Opening index.html directly from Files will NOT provide full PWA/service-worker behavior.
+
+EASIEST METHOD (same Wi‑Fi as a Windows PC):
+1. On the PC, run START_WINDOWS.bat.
+2. Keep the black server window open.
+3. Find the PC's local IPv4 address (for example 192.168.1.20).
+4. On iPhone Safari, open http://192.168.1.20:8000/
+5. Tap Share → Add to Home Screen → Add.
+6. Launch “Rishu Medical ERP” from the Home Screen.
+
+For a true internet-accessible installation, host this folder on an HTTPS static host. The app is already PWA-ready with manifest + service worker.
+
+LOGIN
+Username: admin
+Password: admin123
+Change the default credentials before real use.
+
+DATA
+The current V11 build stores operational data in browser localStorage. Use Backup/Restore regularly. Data is device/browser-specific unless you add a cloud database/sync layer.
