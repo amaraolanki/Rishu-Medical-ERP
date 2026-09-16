@@ -56,23 +56,43 @@ function catalogPicker(){
   openModal('Medicine Catalogue',`<div class="note"><b>Mega Catalogue:</b> Search the 251K+ medicine master by product, company or salt. Select a catalogue item to fill the Item Master form. Batch, expiry, MRP, purchase rate and opening stock remain for your store to enter.</div><div class="field"><label>Search medicine / salt / company</label><input id="catQ" autofocus placeholder="e.g. paracetamol, amoxicillin, azithromycin" oninput="renderCatalog(this.value)"></div><div id="catStatus" class="muted" style="margin-top:8px">Loading catalogue…</div><div id="catResults" class="scroll" style="margin-top:10px;max-height:55vh"></div>`);
   renderCatalog('');
 }
+function parseCSVLine(line){
+  const out=[]; let cur='', quoted=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){
+      if(quoted && line[i+1]==='"'){cur+='"';i++;}
+      else quoted=!quoted;
+    }else if(c===',' && !quoted){out.push(cur);cur='';}
+    else cur+=c;
+  }
+  out.push(cur); return out;
+}
 async function loadMegaCatalogue(){
   if(window.rishuMegaCatalog)return window.rishuMegaCatalog;
   if(window.rishuMegaLoading)return window.rishuMegaLoading;
   window.rishuMegaLoading=(async()=>{
-    if(!window.Papa)throw new Error('CSV parser not loaded.');
     const files=['medicine_catalogue_part1.csv','medicine_catalogue_part2.csv','medicine_catalogue_part3.csv','medicine_catalogue_part4.csv'];
     const rows=[];
     for(const file of files){
-      await new Promise((resolve,reject)=>Papa.parse('./'+file,{download:true,header:true,skipEmptyLines:true,worker:true,step:(r)=>{
-        const x=r.data||{}; if(x.product)rows.push({product:x.product||'',company:x.company||'',salt:x.salt||'',dosage_form:x.dosage_form||'',pack:x.pack||'',reference_price:x.reference_price||'',discontinued:x.discontinued||''});
-      },complete:resolve,error:reject}));
+      const r=await fetch('./'+file,{cache:'no-store'});
+      if(!r.ok)throw new Error(file+' not found ('+r.status+').');
+      const text=await r.text();
+      const lines=text.split(/\r?\n/);
+      if(!lines.length)continue;
+      const header=parseCSVLine(lines[0]);
+      const idx={}; header.forEach((h,i)=>idx[h.trim()]=i);
+      for(let i=1;i<lines.length;i++){
+        const line=lines[i]; if(!line.trim())continue;
+        const a=parseCSVLine(line);
+        const product=a[idx.product]||''; if(!product)continue;
+        rows.push({product,company:a[idx.company]||'',salt:a[idx.salt]||'',dosage_form:a[idx.dosage_form]||'',pack:a[idx.pack]||'',reference_price:a[idx.reference_price]||'',discontinued:a[idx.discontinued]||''});
+      }
     }
     window.rishuMegaCatalog=rows; return rows;
-  })();
+  })().catch(e=>{window.rishuMegaLoading=null;throw e;});
   return window.rishuMegaLoading;
 }
-
 async function renderCatalog(q=''){
   const box=$('catResults'),status=$('catStatus'); if(!box)return;
   q=String(q||'').trim().toLowerCase();

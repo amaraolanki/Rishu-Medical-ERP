@@ -1,0 +1,12 @@
+V14 Catalogue Fix
+
+Fixed: Medicine Catalogue no longer depends on the external PapaParse CDN.
+The app now uses its own CSV parser and the four GitHub-friendly catalogue files.
+This fixes “CSV parser not loaded” on iPhone/Safari when the CDN is unavailable.
+
+Upload/replace all files in this folder in the GitHub Pages repository root.
+Required catalogue files:
+- medicine_catalogue_part1.csv
+- medicine_catalogue_part2.csv
+- medicine_catalogue_part3.csv
+- medicine_catalogue_part4.csv
