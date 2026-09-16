@@ -1,0 +1,24 @@
+RISHU MEDICAL AND HEALTHCARE ERP - MEGA MEDICINE CATALOGUE V13
+
+Source file: indian_medicine_data.csv
+Source rows: 253,973
+Clean catalogue records: 251,045
+Original columns: ['id', 'name', 'price(₹)', 'Is_discontinued', 'manufacturer_name', 'type', 'pack_size_label', 'short_composition1', 'short_composition2']
+
+Fields:
+- catalogue_id
+- product
+- company
+- salt/composition
+- dosage_form/type
+- pack
+- reference_price
+- discontinued
+- search_text
+
+IMPORTANT:
+Reference price is source data and should not be treated as current MRP.
+Batch, expiry, purchase rate, selling MRP and stock are intentionally NOT populated.
+Those belong to your store's Item/Batch/Stock records.
+
+This catalogue is derived from the user-uploaded dataset and is intended for search/import into the RISHU ERP.
