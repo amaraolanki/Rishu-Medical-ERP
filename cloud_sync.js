@@ -1,0 +1,18 @@
+(()=>{
+  'use strict';
+  const CFG_URL='rishu_sb_url', CFG_KEY='rishu_sb_key', CFG_EMAIL='rishu_sb_email';
+  let client=null, timer=null, syncing=false;
+  const cleanData=(d)=>{const x=JSON.parse(JSON.stringify(d||{})); delete x.users; return x;};
+  function status(){return {configured:!!(localStorage.getItem(CFG_URL)&&localStorage.getItem(CFG_KEY)),signedIn:!!client,email:localStorage.getItem(CFG_EMAIL)||''};}
+  function makeClient(url,key){ if(!window.supabase) throw new Error('Supabase library not loaded.'); client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}); return client; }
+  async function configure(url,key,email){ if(!url||!key) throw new Error('Supabase Project URL and Publishable Key are required.'); localStorage.setItem(CFG_URL,url);localStorage.setItem(CFG_KEY,key);if(email)localStorage.setItem(CFG_EMAIL,email); makeClient(url,key); return client; }
+  async function connect(url,key,email,password){try{await configure(url,key,email); if(!email||!password) throw new Error('Cloud email and password are required.'); const {error}=await client.auth.signInWithPassword({email,password}); if(error)throw error; alert('🟢 Cloud connected. Use Pull Cloud first if the cloud already has your data.'); return true;}catch(e){alert('Cloud login failed: '+(e.message||e));return false}}
+  async function signUp(url,key,email,password){try{await configure(url,key,email); if(!email||!password)throw new Error('Email and password are required.'); if(password.length<6)throw new Error('Password must be at least 6 characters.'); const {data,error}=await client.auth.signUp({email,password}); if(error)throw error; if(data.session) alert('🟢 Cloud account created and signed in.'); else alert('Account created. If email confirmation is enabled in Supabase, confirm the email, then use Connect / Sign In.'); return true;}catch(e){alert('Cloud account creation failed: '+(e.message||e));return false}}
+  async function ensure(){if(client)return client; const url=localStorage.getItem(CFG_URL),key=localStorage.getItem(CFG_KEY); if(!url||!key)return null; try{makeClient(url,key); const {data}=await client.auth.getSession(); if(data.session)return client; }catch{} return null;}
+  async function push(db){try{const c=await ensure(); if(!c)throw new Error('Not connected to cloud.'); const {data:{session}}=await c.auth.getSession(); if(!session)throw new Error('Please connect/sign in first.'); const payload={user_id:session.user.id,data:cleanData(db),updated_at:new Date().toISOString()}; const {error}=await c.from('erp_state').upsert(payload,{onConflict:'user_id'}); if(error)throw error; localStorage.setItem('rishu_cloud_last_sync',payload.updated_at); return true;}catch(e){alert('Cloud push failed: '+(e.message||e));return false}}
+  async function pull(){try{const c=await ensure();if(!c)throw new Error('Not connected to cloud.');const {data:{session}}=await c.auth.getSession();if(!session)throw new Error('Please connect/sign in first.');const {data,error}=await c.from('erp_state').select('data,updated_at').eq('user_id',session.user.id).maybeSingle();if(error)throw error;if(!data){alert('No cloud backup exists yet. Use Push Local to upload this device data.');return null;}localStorage.setItem('rishu_cloud_last_sync',data.updated_at||'');return data.data;}catch(e){alert('Cloud pull failed: '+(e.message||e));return null}}
+  function scheduleSync(db){if(!status().configured||!client||syncing)return;clearTimeout(timer);timer=setTimeout(async()=>{syncing=true;await push(db);syncing=false},900)}
+  async function logout(){if(client)await client.auth.signOut();client=null;}
+  window.cloudBridge={status,connect,signUp,push,pull,scheduleSync,logout};
+  ensure();
+})();

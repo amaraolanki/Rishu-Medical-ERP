@@ -1,0 +1,4 @@
+V13 Mega Catalogue is split into 4 CSV files because GitHub web upload limits individual files to 25 MB.
+Upload all four medicine_catalogue_part*.csv files to the repository root alongside index.html/app.js.
+Do not upload the old medicine_catalogue_251k.csv.
+The ERP loads all four parts on demand from Item Master > Select from Medicine Catalogue.

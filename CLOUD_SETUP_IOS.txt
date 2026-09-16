@@ -1,0 +1,17 @@
+RISHU ERP V12 CLOUD SETUP — iPhone
+
+1) Open Supabase and create a new project.
+2) In SQL Editor, run SUPABASE_SETUP.sql from this folder.
+3) In Project Settings → API Keys, copy:
+   - Project URL
+   - Publishable key (sb_publishable_...)
+4) Open the live ERP → Settings / Cloud.
+5) Paste URL + publishable key.
+6) First device: enter email/password → Create Cloud Account → Push Local.
+7) Other device: enter same URL/key/email/password → Connect / Sign In → Pull Cloud.
+8) From then on, normal ERP saves auto-sync after a short delay.
+
+IMPORTANT:
+- Do NOT use a service_role or secret key in the browser.
+- If email confirmation is enabled, confirm the email before signing in.
+- Cloud sync is per Supabase account; use the same account on all devices for one shop.

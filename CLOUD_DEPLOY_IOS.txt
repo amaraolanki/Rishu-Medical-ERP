@@ -1,0 +1,22 @@
+RISHU MEDICAL & HEALTHCARE ERP V11 - CLOUD/PWA DEPLOYMENT
+
+IMPORTANT:
+This build is static-hosting ready and works over HTTPS. Current ERP data is stored in the browser (localStorage), so it is NOT multi-device cloud database sync yet.
+
+EASIEST iPHONE-ONLY DEPLOYMENT (Netlify):
+1. Create/sign in to a Netlify account in Safari.
+2. Open Netlify Drop / deploy manually page.
+3. Upload the contents of this folder (or the ZIP if the uploader accepts ZIP).
+4. Netlify gives you an https://...netlify.app address.
+5. Open that address in Safari.
+6. Share -> Add to Home Screen.
+
+RECOMMENDED NEXT STEP FOR REAL CLOUD DATA:
+Connect the app to a hosted database (e.g. Supabase/Firebase) and replace localStorage persistence with authenticated cloud sync. This requires creating the database project and supplying its public project URL/key; never put a secret/service-role key in the browser.
+
+DEFAULT LOGIN:
+admin / admin123
+Change the default password/user before real use.
+
+BACKUP:
+Use Backup -> Download Backup regularly until cloud database sync is enabled.

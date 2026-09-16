@@ -1,5 +1,5 @@
-const CACHE = "rishu-medical-app-v11";
-const ASSETS = ["./", "./index.html", "./style.css", "./app.js", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
+const CACHE = "rishu-medical-app-v12";
+const ASSETS = ["./", "./index.html", "./style.css", "./app.js", "./catalog_loader.js", "./medicine_catalog_seed.json", "./cloud_sync.js", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
